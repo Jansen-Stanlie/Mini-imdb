@@ -11,7 +11,7 @@
     "db:seed:one": "sequelize db:seed --seed",
     "db:seed:undo": "sequelize-cli db:seed:undo",
     "db:seed:make": "sequelize-cli seed:generate --name",
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",

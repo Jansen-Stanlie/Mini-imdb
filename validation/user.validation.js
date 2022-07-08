@@ -13,6 +13,8 @@ const loginValidationSchema = joi.object({
 	email: joi.string().email(),
 });
 
+
+
 function validatelogin(req, res, next) {
 	validate(req, res, next, loginValidationSchema);
 }

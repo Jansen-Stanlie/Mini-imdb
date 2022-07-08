@@ -41,7 +41,7 @@ const verifyAdmin = async (req, res, next) => {
 		console.log("user_id", id);
 		const userRole = await Roles.findOne({
 			where: {
-				user_id: id,
+				id_user: id,
 			},
 		});
 		console.log("Role: ", userRole);
