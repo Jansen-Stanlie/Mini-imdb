@@ -1,6 +1,7 @@
 const { Film,
      Genre ,
      Category,
+     Rating,
      sequelize } = require('../models/index')
 
 
@@ -79,6 +80,59 @@ const allFilm = async (req,res) => {
     })
 }
 
+const getFilmByTitle = async (req,res) => {
+    const {title} = req.body;
+    let sum = 0,avg;
+
+    const filmId = await Film.findOne({
+        where: {
+            title: title
+        }
+    })
+
+    const rating = await Rating.findAll({
+        where: {
+            id_film: filmId.id
+        }
+    })
+
+    const ratingFilm = JSON.parse(JSON.stringify(rating))
+    for(let i = 0;i < ratingFilm.length; i++){
+        sum += ratingFilm[i].rating
+    }
+
+    avg = sum / ratingFilm.length
+
+    await Film.findAll({
+        where:{
+            title: title
+        },attributes: [
+            'id',
+            'title',
+            'year',
+            'director',
+            [sequelize.literal(`"category"."category"`), "categoryFilm"],
+        ],
+        subQuery: false,
+        include:[{
+            model: Genre,
+            as: 'genre',
+            attributes: [
+                'genre'
+            ]
+        },{
+            model: Category,
+            as: 'category',
+            attributes:[]
+        }]
+    }).then(data => {
+        res.status(200).json({
+            data: data,
+            rating: avg
+        })
+    })
+}
+
 const updateFilm = async (req,res) => {
     const {id} = req.params;
 
@@ -141,5 +195,6 @@ module.exports = {
     addFilm,
     updateFilm,
     allFilm,
-    deleteFilm
+    deleteFilm,
+    getFilmByTitle
 }
