@@ -11,8 +11,6 @@ const {
 const addFilm = async (req, res) => {
 	const { genre, category, title, year, director, photoUrl, videoUrl } =
 		req.body;
-	console.log("genre", genre);
-	console.log("photo", photoUrl);
 
 	Film.findOne({
 		where: {
@@ -163,17 +161,17 @@ const getFilmByTitle = async (req, res) => {
 		include: [
 			{
 				model: Genre,
-				as: "genres",
+				as: "genre",
 				attributes: ["genre"],
 			},
 			{
 				model: Category,
-				as: "categories",
+				as: "category",
 				attributes: [],
 			},
 			{
 				model: Photo,
-				as: "photos",
+				as: "photo",
 				attributes: [],
 			},
 		],
@@ -184,6 +182,98 @@ const getFilmByTitle = async (req, res) => {
 		});
 	});
 };
+
+const getFilmByGenre = async (req,res) => {
+	const {genre} = req.body;
+
+	await Genre.findAll({
+		where: {
+			genre: genre
+		},
+		attributes:[
+			'genre',
+			[sequelize.literal(`"genres"."title"`), "TitleFilm"],
+			[sequelize.literal(`"genres"."year"`), "YearFilm"],
+			[sequelize.literal(`"genres"."director"`), "DirectorFilm"]
+		],
+		subQuery: false,
+		include: [{
+			model: Film,
+			as: 'genres',
+			attributes: ['id'],
+			include: [{
+				model: Category,
+				as: 'category',
+				attributes: ['category']
+			},{
+				model: Photo,
+				as: "photo",
+				attributes: ["photoUrl"],
+			},
+			{
+				model: Video,
+				as: "video",
+				attributes: ["videoUrl"],
+			}],
+
+		}]
+	}).then(data => {
+		res.status(200).json({
+			status: "success",
+			data: data
+		})
+	}).catch(err => {
+		res.status(400).json({
+			status: "Failed",
+			err : err
+		})
+	})
+}
+
+const getFilmByCategory = async (req,res) => {
+	const {category} = req.body;
+
+	await Category.findAll({
+		where: {
+			category: category
+		},
+		attributes: [
+			'category',
+			[sequelize.literal(`"categories"."title"`), "TitleFilm"],
+			[sequelize.literal(`"categories"."year"`), "YearFilm"],
+			[sequelize.literal(`"categories"."director"`), "DirectorFilm"]
+		],
+		subQuery: false,
+		include: [{
+			model: Film,
+			as: 'categories',
+			attributes: ['id'],
+			include: [{
+				model: Genre,
+				as: 'genre',
+				attributes: ['genre']
+			},{
+				model: Photo,
+				as: "photo",
+				attributes: ["photoUrl"],
+			},
+			{
+				model: Video,
+				as: "video",
+				attributes: ["videoUrl"],
+			}]
+		}]
+	}).then(data => {
+		res.status(200).json({
+			status: "success",
+			data: data
+		})
+	}).catch(err => {
+		res.status(400).json({
+			status: "Failed"
+		})
+	})
+}
 
 const updateFilm = async (req, res) => {
 	const { id } = req.params;
@@ -259,11 +349,7 @@ module.exports = {
 	allFilm,
 	deleteFilm,
 	getFilmByTitle,
+	getFilmByGenre,
+	getFilmByCategory
 };
-// genre.map((genres) => {
-// 	console.log(genres);
-// 	Genre.create({
-// 		id_film: datas.id,
-// 		genre: genres,
-// 	});
-// });
+
