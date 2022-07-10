@@ -36,13 +36,22 @@ const addFilm = async (req, res) => {
 						id_film: datas.id,
 						genre: genre.toString(),
 					});
+
 					Category.create({
 						id_film: datas.id,
-						category: category.toString(),
+						category: category,
 					});
-					return Photo.create({
-						id_film: datas.id,
-						photoUrl: photoUrl.toString(),
+					videoUrl.map((videosurl) => {
+						Video.create({
+							id_film: datas.id,
+							videoUrl: videosurl,
+						});
+					});
+					return photoUrl.map((photosurl) => {
+						Photo.create({
+							id_film: datas.id,
+							photoUrl: photosurl,
+						});
 					});
 				})
 				.then((data) => {
@@ -71,7 +80,7 @@ const allFilm = async (req, res) => {
 			"year",
 			"director",
 			[sequelize.literal(`"category"."category"`), "categoryFilm"],
-			[sequelize.literal(`"photo"."photoUrl"`), "Url"],
+			// [sequelize.fn("AVG", sequelize.col("rating.rating")), "avgRating"],
 		],
 		subQuery: false,
 		include: [
@@ -88,7 +97,12 @@ const allFilm = async (req, res) => {
 			{
 				model: Photo,
 				as: "photo",
-				attributes: [],
+				attributes: ["photoUrl"],
+			},
+			{
+				model: Video,
+				as: "video",
+				attributes: ["videoUrl"],
 			},
 		],
 	})
