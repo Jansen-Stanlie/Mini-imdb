@@ -1,23 +1,19 @@
 const express = require("express");
 const {
 	addFilm,
-    updateFilm,
-    allFilm,
-    deleteFilm,
-    getFilmByTitle,
-    getFilmByCategory,
-    getFilmByGenre
+	updateFilm,
+	allFilm,
+	deleteFilm,
+	getFilmByTitle,
 } = require("../controllers/film.controller");
 
 const router = express.Router();
-const { verifyAdmin } = require("../middleware/auth");
-// const { validateProduct } = require("../validation/product.validation");
+const { verifyAdmin, verify } = require("../middleware/auth");
 
-router.post("/addFilm",verifyAdmin,addFilm);
-router.get('/',allFilm)
-router.get('/byTitle',getFilmByTitle)
-router.get('/byCategory',getFilmByCategory)
-router.get('/byGenre',getFilmByGenre)
-router.put("/updateFilm/:id",verifyAdmin,updateFilm);
-router.delete("/deleteFilm/:id",verifyAdmin,deleteFilm);
+router.post("/addFilm", addFilm);
+
+router.get("/", allFilm);
+router.get("/byTitle", getFilmByTitle);
+router.put("/updateFilm/:id", verify, verifyAdmin, updateFilm);
+router.delete("/deleteFilm/:id", verify, verifyAdmin, deleteFilm);
 module.exports = router;
