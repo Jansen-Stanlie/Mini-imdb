@@ -69,7 +69,7 @@ const signUp = async (req, res, next) => {
 				})
 					.then((user) => {
 						return Role.create({
-							user_id: user.id,
+							id_user: user.id,
 							role: "USER",
 						});
 					})

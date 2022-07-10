@@ -11,7 +11,8 @@
 		"db:seed:one": "sequelize db:seed --seed",
 		"db:seed:undo": "sequelize-cli db:seed:undo",
 		"db:seed:make": "sequelize-cli seed:generate --name",
-		"db:create": "sequelize db:create"
+		"db:create": "sequelize db:create",
+		"db:migrate:create": "sequelize migration:generate --name"
 	},
 	"keywords": [],
 	"author": "",
