@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
 				as: "category",
 			});
 
+      this.hasMany(models.Actor, {
+				foreignKey: "id_film",
+				as: "actor",
+			});
+
       this.hasMany(models.Rating, {
 				foreignKey: "id_film",
 				as: "rating",

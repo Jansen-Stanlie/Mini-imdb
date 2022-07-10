@@ -2,6 +2,7 @@ const { Film,
      Genre ,
      Category,
      Rating,
+     Actor,
      sequelize } = require('../models/index')
 
 
@@ -13,6 +14,8 @@ const addFilm = async(req,res) => {
         year,
         director
     } = req.body;
+
+   
 
     Film.findOne({
         where: {
@@ -48,6 +51,14 @@ const addFilm = async(req,res) => {
 }
 
 const allFilm = async (req,res) => {
+    const allRating = await Rating.findAll();
+    let ratingParse = JSON.parse(JSON.stringify(allRating));
+    const averages = [...ratingParse
+        // get list of month/values
+        .reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+        .map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
+   
+    
     await Film.findAll({
         attributes: [
             'id',
@@ -69,9 +80,11 @@ const allFilm = async (req,res) => {
             attributes:[]
         }]
     }).then(data => {
+        const dataFilm = JSON.parse(JSON.stringify(data));
+        
         res.status(200).json({
             status: 'success',
-            data: data
+            data: dataFilm
         })
     }).catch(err => {
         res.status(400).json({
@@ -121,6 +134,10 @@ const getFilmByTitle = async (req,res) => {
                 'genre'
             ]
         },{
+            model: Actor,
+            as: 'actor',
+            attributes: ['name']
+        },{
             model: Category,
             as: 'category',
             attributes:[]
@@ -129,6 +146,67 @@ const getFilmByTitle = async (req,res) => {
         res.status(200).json({
             data: data,
             rating: avg
+        })
+    })
+}
+
+const getFilmByCategory = async (req,res) => {
+    const {category} = req.body;
+
+    await Category.findAll({
+        where: {
+            category: category
+        },
+        attributes: [
+            'category',
+            [sequelize.literal(`"categoryFilm"."title"`), "TitleFilm"],
+            [sequelize.literal(`"categoryFilm"."year"`), "YearFilm"]
+            
+        ],
+        subQuery: false,
+        include: [{
+            model: Film,
+            as: 'categoryFilm',
+            attributes: []
+        }]
+    }).then(data => {
+        res.status(200).json({
+            status: 'Success',
+            data: data
+        })
+    }).catch(err => {
+        res.status(400).json({
+            status: 'Failed'
+        })
+    })
+}
+
+const getFilmByGenre = async (req,res) => {
+    const {genre} = req.body;
+
+    await Genre.findAll({
+        where: {
+            genre: genre
+        },
+        attributes: [
+            'genre',
+            [sequelize.literal(`"genreFilm"."title"`), "TitleFilm"],
+            [sequelize.literal(`"genreFilm"."year"`), "YearFilm"]
+        ],
+        subQuery: false,
+        include: {
+            model: Film,
+            as: 'genreFilm',
+            attributes: []
+        }
+    }).then(data => {
+        res.status(200).json({
+            status: 'Success',
+            data: data
+        })
+    }).catch(err => {
+        res.status(400).json({
+            status: 'Fail'
         })
     })
 }
@@ -196,5 +274,7 @@ module.exports = {
     updateFilm,
     allFilm,
     deleteFilm,
-    getFilmByTitle
+    getFilmByTitle,
+    getFilmByCategory,
+    getFilmByGenre
 }
