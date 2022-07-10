@@ -1,84 +1,66 @@
-const { Film, Genre, Category, Rating, sequelize } = require("../models/index");
+const {
+	Film,
+	Genre,
+	Category,
+	Rating,
+	sequelize,
+	Photo,
+	Video,
+} = require("../models/index");
 
 const addFilm = async (req, res) => {
-	const { genre, category, title, year, director } = req.body;
+	const { genre, category, title, year, director, photoUrl, videoUrl } =
+		req.body;
 	console.log("genre", genre);
-	console.log("director", director);
+	console.log("photo", photoUrl);
 
 	Film.findOne({
 		where: {
 			title: title,
 		},
-	}).then((data) => {
-		if (data) {
-			return res.status(404).json({
-				status: "Failed to add film",
-				message: "Film already exist",
-			});
-		}
-		if (director.length > 1) {
+	})
+		.then((data) => {
+			if (data) {
+				return res.status(404).json({
+					status: "Failed to add film",
+					message: "Film already exist",
+				});
+			}
 			Film.create({
 				title: title,
 				director: director.toString(),
 				year: year,
 			})
 				.then((datas) => {
-					genre.map((genres) => {
-						console.log(genres);
-						Genre.create({
-							id_film: datas.id,
-							genre: genres,
-						});
+					Genre.create({
+						id_film: datas.id,
+						genre: genre.toString(),
 					});
 					Category.create({
 						id_film: datas.id,
-						category: category,
+						category: category.toString(),
+					});
+					return Photo.create({
+						id_film: datas.id,
+						photoUrl: photoUrl.toString(),
 					});
 				})
 				.then((data) => {
-					res.status(200).json({
+					return res.status(200).json({
 						status: "Success",
 						message: "film is added",
 					});
 				})
 				.catch((err) => {
-					res.status(400).json({
+					return res.status(400).json({
 						status: "Failed",
 						message: err,
 					});
 				});
-		}
-		Film.create({
-			title: title,
-			director: director,
-			year: year,
 		})
-			.then((datas) => {
-				genre.map((genres) => {
-					console.log(genres);
-					Genre.create({
-						id_film: datas.id,
-						genre: genres,
-					});
-				});
-				Category.create({
-					id_film: datas.id,
-					category: category,
-				});
-			})
-			.then((data) => {
-				res.status(200).json({
-					status: "Success",
-					message: "film is added",
-				});
-			})
-			.catch((err) => {
-				res.status(400).json({
-					status: "Failed",
-					message: err,
-				});
-			});
-	});
+		.catch((err) => {
+			console.log(err);
+		});
 };
 
 const allFilm = async (req, res) => {
@@ -89,6 +71,7 @@ const allFilm = async (req, res) => {
 			"year",
 			"director",
 			[sequelize.literal(`"category"."category"`), "categoryFilm"],
+			[sequelize.literal(`"photo"."photoUrl"`), "Url"],
 		],
 		subQuery: false,
 		include: [
@@ -100,6 +83,11 @@ const allFilm = async (req, res) => {
 			{
 				model: Category,
 				as: "category",
+				attributes: [],
+			},
+			{
+				model: Photo,
+				as: "photo",
 				attributes: [],
 			},
 		],
@@ -162,6 +150,11 @@ const getFilmByTitle = async (req, res) => {
 			{
 				model: Category,
 				as: "categories",
+				attributes: [],
+			},
+			{
+				model: Photo,
+				as: "photos",
 				attributes: [],
 			},
 		],
@@ -248,3 +241,10 @@ module.exports = {
 	deleteFilm,
 	getFilmByTitle,
 };
+// genre.map((genres) => {
+// 	console.log(genres);
+// 	Genre.create({
+// 		id_film: datas.id,
+// 		genre: genres,
+// 	});
+// });
