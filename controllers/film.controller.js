@@ -39,19 +39,17 @@ const addFilm = async (req, res) => {
 
 					Category.create({
 						id_film: datas.id,
-						category: category,
+						category: category.toString(),
 					});
-					videoUrl.map((videosurl) => {
-						Video.create({
-							id_film: datas.id,
-							videoUrl: videosurl,
-						});
+
+					Video.create({
+						id_film: datas.id,
+						videoUrl: videoUrl.toString(),
 					});
-					return photoUrl.map((photosurl) => {
-						Photo.create({
-							id_film: datas.id,
-							photoUrl: photosurl,
-						});
+
+					return Photo.create({
+						id_film: datas.id,
+						photoUrl: photoUrl.toString(),
 					});
 				})
 				.then((data) => {
@@ -107,7 +105,14 @@ const allFilm = async (req, res) => {
 		],
 	})
 		.then((data) => {
-			res.status(200).json({
+			data.forEach((element, index, array) => {
+				// console.log(element.photo); // same myArray object 3 times
+				element.photo.forEach((element, index, array) => {
+					console.log(element.photoUrl.split(","));
+				});
+			});
+
+			return res.status(200).json({
 				status: "success",
 				data: data,
 			});
