@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
 			});
 			this.hasMany(models.Actor, {
 				foreignKey: "id_film",
-				as: "actor",
+				as: "actors",
 			});
 			this.hasMany(models.Comment, {
 				foreignKey: "id_film",
