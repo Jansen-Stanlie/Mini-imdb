@@ -75,6 +75,16 @@ const addFilm = async (req, res) => {
 };
 
 const allFilm = async (req, res) => {
+	const ratings = await Rating.findAll();
+	let ratingsParse = JSON.parse(JSON.stringify(ratings));
+	
+	const averages = [...ratingsParse
+		// get list of month/values
+		.reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+		// get list of month/average
+		.map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
+		
+
 	await Film.findAll({
 		attributes: [
 			"id",
@@ -116,10 +126,20 @@ const allFilm = async (req, res) => {
 			// 		console.log(element.photoUrl.split(","));
 			// 	});
 			// });
+			let dataParse = JSON.parse(JSON.stringify(data))
+
+			for(let i = 0 ; i < averages.length ;i++){
+				console.log(averages[i].id_film)
+				dataParse.find(x => {
+					if(x.id === averages[i].id_film){
+						x.rating = averages[i].rating
+					}
+				})
+			}
 
 			return res.status(200).json({
 				status: "success",
-				data: data,
+				data: dataParse,
 			});
 		})
 		.catch((err) => {
@@ -192,6 +212,14 @@ const getFilmByTitle = async (req, res) => {
 
 const getFilmByGenre = async (req, res) => {
 	const { genre } = req.body;
+	const ratings = await Rating.findAll();
+	let ratingsParse = JSON.parse(JSON.stringify(ratings));
+	
+	const averages = [...ratingsParse
+		// get list of month/values
+		.reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+		// get list of month/average
+		.map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
 
 	await Genre.findAll({
 		where: {
@@ -199,6 +227,7 @@ const getFilmByGenre = async (req, res) => {
 		},
 		attributes: [
 			"genre",
+			[sequelize.literal(`"genres"."id"`), "id"],
 			[sequelize.literal(`"genres"."title"`), "TitleFilm"],
 			[sequelize.literal(`"genres"."year"`), "YearFilm"],
 			[sequelize.col(`"genres"."director"`), "DirectorFilm"],
@@ -230,9 +259,19 @@ const getFilmByGenre = async (req, res) => {
 		],
 	})
 		.then((data) => {
+			let dataParse = JSON.parse(JSON.stringify(data))
+
+			for(let i = 0 ; i < averages.length ;i++){
+				console.log(averages[i].id_film)
+				dataParse.find(x => {
+					if(x.id === averages[i].id_film){
+						x.rating = averages[i].rating
+					}
+				})
+			}
 			res.status(200).json({
 				status: "success",
-				data: data,
+				data: dataParse,
 			});
 		})
 		.catch((err) => {
@@ -245,6 +284,14 @@ const getFilmByGenre = async (req, res) => {
 
 const getFilmByCategory = async (req, res) => {
 	const { category } = req.body;
+	const ratings = await Rating.findAll();
+	let ratingsParse = JSON.parse(JSON.stringify(ratings));
+	
+	const averages = [...ratingsParse
+		// get list of month/values
+		.reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+		// get list of month/average
+		.map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
 
 	await Category.findAll({
 		where: {
@@ -252,6 +299,7 @@ const getFilmByCategory = async (req, res) => {
 		},
 		attributes: [
 			"category",
+			[sequelize.literal(`"categories"."id"`), "id"],
 			[sequelize.literal(`"categories"."title"`), "TitleFilm"],
 			[sequelize.literal(`"categories"."year"`), "YearFilm"],
 			[sequelize.col(`"categories"."director"`), "DirectorFilm"],
@@ -284,9 +332,19 @@ const getFilmByCategory = async (req, res) => {
 		],
 	})
 		.then((data) => {
+			let dataParse = JSON.parse(JSON.stringify(data))
+
+			for(let i = 0 ; i < averages.length ;i++){
+				console.log(averages[i].id_film)
+				dataParse.find(x => {
+					if(x.id === averages[i].id_film){
+						x.rating = averages[i].rating
+					}
+				})
+			}
 			res.status(200).json({
 				status: "success",
-				data: data,
+				data: dataParse,
 			});
 		})
 		.catch((err) => {

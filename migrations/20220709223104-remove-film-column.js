@@ -11,6 +11,11 @@ module.exports = {
 	},
 
 	async down(queryInterface, Sequelize) {
-		return queryInterface.removeColumn("Films", {"id_genre","id_category"});
+		return queryInterface.sequelize.transaction(t => {
+			return Promise.all([
+			  queryInterface.removeColumn('Films', 'id_genre', { transaction: t }),
+			  queryInterface.removeColumn('Films', 'id_category', { transaction: t })
+			]);
+		  });
 	},
 };
