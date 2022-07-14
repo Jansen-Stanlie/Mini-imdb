@@ -6,6 +6,7 @@ const {
 	sequelize,
 	Photo,
 	Video,
+	Comment
 } = require("../models/index");
 
 const addFilm = async (req, res) => {
@@ -117,6 +118,11 @@ const allFilm = async (req, res) => {
 				as: "video",
 				attributes: ["videoUrl"],
 			},
+			{
+				model: Comment,
+				as: "comment",
+				attributes: ["comment"],
+			}
 		],
 	})
 		.then((data) => {
@@ -201,6 +207,11 @@ const getFilmByTitle = async (req, res) => {
 				as: "photo",
 				attributes: [],
 			},
+			{
+				model: Comment,
+				as: "comment",
+				attributes: ["comment"],
+			}
 		],
 	}).then((data) => {
 		res.status(200).json({
@@ -254,6 +265,11 @@ const getFilmByGenre = async (req, res) => {
 						as: "video",
 						attributes: ["videoUrl"],
 					},
+					{
+						model: Comment,
+						as: "comment",
+						attributes: ["comment"],
+					}
 				],
 			},
 		],
@@ -327,6 +343,12 @@ const getFilmByCategory = async (req, res) => {
 						as: "video",
 						attributes: ["videoUrl"],
 					},
+					{
+						model: Comment,
+						as: "comment",
+						attributes: ["comment"],
+					}
+					
 				],
 			},
 		],

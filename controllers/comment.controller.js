@@ -1,9 +1,11 @@
 const Comment = require("../models/index").Comment;
+const Film = require("../models/index").Film;
+const Rating = require("../models/index").Rating;
 const { sequelize } = require("../models/index");
 const jwt = require("jsonwebtoken");
 const userFeedback = async (req, res, next) => {
 	const token = req.headers["auth"];
-
+	const privateKey = "my-secret";
 	if (!token) {
 		return res.status(500).send({
 			message: "Internal server Error",
@@ -37,7 +39,7 @@ const userFeedback = async (req, res, next) => {
 					},
 					{ transaction: t }
 				);
-				const addRatings = await Comment.create(
+				const addRatings = await Rating.create(
 					{
 						id_film: id_film,
 						id_user: id_user,
