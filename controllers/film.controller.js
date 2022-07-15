@@ -6,7 +6,7 @@ const {
 	sequelize,
 	Photo,
 	Video,
-	Comment
+	Comment,
 } = require("../models/index");
 
 const addFilm = async (req, res) => {
@@ -78,13 +78,21 @@ const addFilm = async (req, res) => {
 const allFilm = async (req, res) => {
 	const ratings = await Rating.findAll();
 	let ratingsParse = JSON.parse(JSON.stringify(ratings));
-	
-	const averages = [...ratingsParse
-		// get list of month/values
-		.reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+
+	const averages = [
+		...ratingsParse
+			// get list of month/values
+			.reduce(
+				(map, { id_film, rating }) =>
+					map.set(id_film, [...(map.get(id_film) || []), rating]),
+				new Map()
+			),
+	]
 		// get list of month/average
-		.map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
-		
+		.map(([id_film, rating]) => ({
+			id_film,
+			rating: rating.reduce((sum, val) => sum + val, 0) / rating.length,
+		}));
 
 	await Film.findAll({
 		attributes: [
@@ -93,7 +101,7 @@ const allFilm = async (req, res) => {
 			"year",
 			"director",
 			[sequelize.literal(`"category"."category"`), "categoryFilm"],
-			// [sequelize.fn("AVG", sequelize.col("rating.rating")), "avgRating"],
+			// [sequelize.fn("AVG", sequelize.col(`"ratings.rating"`)), "avgRating"],
 		],
 		subQuery: false,
 		raw: false,
@@ -122,7 +130,8 @@ const allFilm = async (req, res) => {
 				model: Comment,
 				as: "comment",
 				attributes: ["comment"],
-			}
+			},
+			// { model: Rating, as: "ratings", attributes: [] },
 		],
 	})
 		.then((data) => {
@@ -132,15 +141,15 @@ const allFilm = async (req, res) => {
 			// 		console.log(element.photoUrl.split(","));
 			// 	});
 			// });
-			let dataParse = JSON.parse(JSON.stringify(data))
+			let dataParse = JSON.parse(JSON.stringify(data));
 
-			for(let i = 0 ; i < averages.length ;i++){
-				console.log(averages[i].id_film)
-				dataParse.find(x => {
-					if(x.id === averages[i].id_film){
-						x.rating = averages[i].rating
+			for (let i = 0; i < averages.length; i++) {
+				console.log(averages[i].id_film);
+				dataParse.find((x) => {
+					if (x.id === averages[i].id_film) {
+						x.rating_all = averages[i].rating;
 					}
-				})
+				});
 			}
 
 			return res.status(200).json({
@@ -211,7 +220,7 @@ const getFilmByTitle = async (req, res) => {
 				model: Comment,
 				as: "comment",
 				attributes: ["comment"],
-			}
+			},
 		],
 	}).then((data) => {
 		res.status(200).json({
@@ -225,12 +234,21 @@ const getFilmByGenre = async (req, res) => {
 	const { genre } = req.body;
 	const ratings = await Rating.findAll();
 	let ratingsParse = JSON.parse(JSON.stringify(ratings));
-	
-	const averages = [...ratingsParse
-		// get list of month/values
-		.reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+
+	const averages = [
+		...ratingsParse
+			// get list of month/values
+			.reduce(
+				(map, { id_film, rating }) =>
+					map.set(id_film, [...(map.get(id_film) || []), rating]),
+				new Map()
+			),
+	]
 		// get list of month/average
-		.map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
+		.map(([id_film, rating]) => ({
+			id_film,
+			rating: rating.reduce((sum, val) => sum + val, 0) / rating.length,
+		}));
 
 	await Genre.findAll({
 		where: {
@@ -269,21 +287,21 @@ const getFilmByGenre = async (req, res) => {
 						model: Comment,
 						as: "comment",
 						attributes: ["comment"],
-					}
+					},
 				],
 			},
 		],
 	})
 		.then((data) => {
-			let dataParse = JSON.parse(JSON.stringify(data))
+			let dataParse = JSON.parse(JSON.stringify(data));
 
-			for(let i = 0 ; i < averages.length ;i++){
-				console.log(averages[i].id_film)
-				dataParse.find(x => {
-					if(x.id === averages[i].id_film){
-						x.rating = averages[i].rating
+			for (let i = 0; i < averages.length; i++) {
+				console.log(averages[i].id_film);
+				dataParse.find((x) => {
+					if (x.id === averages[i].id_film) {
+						x.rating = averages[i].rating;
 					}
-				})
+				});
 			}
 			res.status(200).json({
 				status: "success",
@@ -302,12 +320,21 @@ const getFilmByCategory = async (req, res) => {
 	const { category } = req.body;
 	const ratings = await Rating.findAll();
 	let ratingsParse = JSON.parse(JSON.stringify(ratings));
-	
-	const averages = [...ratingsParse
-		// get list of month/values
-		.reduce((map, { id_film, rating }) => map.set(id_film, [...(map.get(id_film) || []), rating]), new Map) ]
+
+	const averages = [
+		...ratingsParse
+			// get list of month/values
+			.reduce(
+				(map, { id_film, rating }) =>
+					map.set(id_film, [...(map.get(id_film) || []), rating]),
+				new Map()
+			),
+	]
 		// get list of month/average
-		.map(([id_film, rating]) => ({ id_film, rating: rating.reduce((sum, val) => sum + val, 0) / rating.length }));
+		.map(([id_film, rating]) => ({
+			id_film,
+			rating: rating.reduce((sum, val) => sum + val, 0) / rating.length,
+		}));
 
 	await Category.findAll({
 		where: {
@@ -347,22 +374,21 @@ const getFilmByCategory = async (req, res) => {
 						model: Comment,
 						as: "comment",
 						attributes: ["comment"],
-					}
-					
+					},
 				],
 			},
 		],
 	})
 		.then((data) => {
-			let dataParse = JSON.parse(JSON.stringify(data))
+			let dataParse = JSON.parse(JSON.stringify(data));
 
-			for(let i = 0 ; i < averages.length ;i++){
-				console.log(averages[i].id_film)
-				dataParse.find(x => {
-					if(x.id === averages[i].id_film){
-						x.rating = averages[i].rating
+			for (let i = 0; i < averages.length; i++) {
+				console.log(averages[i].id_film);
+				dataParse.find((x) => {
+					if (x.id === averages[i].id_film) {
+						x.rating = averages[i].rating;
 					}
-				})
+				});
 			}
 			res.status(200).json({
 				status: "success",

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			id_film: DataTypes.INTEGER,
 			comment: DataTypes.STRING,
+			id_user: DataTypes.INTEGER,
 		},
 		{
 			sequelize,

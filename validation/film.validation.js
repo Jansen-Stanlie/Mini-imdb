@@ -9,7 +9,7 @@ const addValidationSchema = joi.object({
 });
 
 function validateAddFilm(req, res, next) {
-	validate(req, res, next, loginValidationSchema);
+	validate(req, res, next, addValidationSchema);
 }
 
 module.exports = {

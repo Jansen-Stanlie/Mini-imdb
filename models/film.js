@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
 
 			this.hasMany(models.Rating, {
 				foreignKey: "id_film",
-				as: "rating",
+				as: "ratings",
 			});
 			this.hasMany(models.Video, {
 				foreignKey: "id_film",
