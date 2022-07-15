@@ -24,7 +24,7 @@ const allPhoto = async (req, res) => {
 	await Photo.findAll({
 		attributes: [
 			"id",
-			"photo",
+			"photoUrl",
 			[sequelize.literal(`"photos"."title"`), "TitleFilm"],
 		],
 		subQuery: false,
