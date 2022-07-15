@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "nodemon index.js",
+		"start": "node index.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"db:migrate": "sequelize db:migrate",
 		"db:migrate:rollback": "sequelize db:migrate:undo",
@@ -20,6 +20,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"bcrypt": "^5.0.1",
+		"dotenv": "^16.0.1",
 		"express": "^4.18.1",
 		"joi": "^17.6.0",
 		"jsonwebtoken": "^8.5.1",
